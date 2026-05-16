@@ -16,33 +16,33 @@ const LandingPage: React.FC = () => {
       justifyContent: 'center',
       color: 'white',
       overflow: 'hidden',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Outfit', 'Inter', sans-serif",
       background: 'transparent'
     }}>
-      {/* Decorative Disc - 20-Layered Detail */}
-      <div style={{
+      {/* Decorative Disc - Detailed with Breathing Animation */}
+      <div className="breathing-disc" style={{
         position: 'absolute',
-        left: '-5%',
-        width: '100vh',
-        height: '100vh',
+        left: '-8%',
+        width: '110vh',
+        height: '110vh',
         borderRadius: '50%',
         background: '#080808',
-        boxShadow: '0 0 120px rgba(0,0,0,1), inset 0 0 60px rgba(255,255,255,0.02)',
-        animation: 'rotate 30s linear infinite',
+        boxShadow: '0 0 150px rgba(0,0,0,1), inset 0 0 80px rgba(255,255,255,0.02)',
+        animation: 'rotate 40s linear infinite, breathe 8s ease-in-out infinite',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: 0.8,
+        opacity: 0.85,
         border: '1px solid #111'
       }}>
-        {[...Array(20)].map((_, i) => (
+        {[...Array(25)].map((_, i) => (
           <div key={i} style={{
             position: 'absolute',
-            width: `${95 - i * 3}%`,
-            height: `${95 - i * 3}%`,
+            width: `${96 - i * 3}%`,
+            height: `${96 - i * 3}%`,
             borderRadius: '50%',
-            border: '1px solid rgba(255,255,255,0.03)',
-            boxShadow: 'inset 0 0 5px rgba(0,0,0,0.5)'
+            border: '1px solid rgba(255,255,255,0.035)',
+            boxShadow: 'inset 0 0 8px rgba(0,0,0,0.6)'
           }} />
         ))}
         
@@ -50,9 +50,9 @@ const LandingPage: React.FC = () => {
           position: 'absolute',
           width: '100%',
           height: '100%',
-          background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.03) 15%, transparent 30%, transparent 50%, rgba(255,255,255,0.03) 65%, transparent 80%)',
+          background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.04) 15%, transparent 30%, transparent 50%, rgba(255,255,255,0.04) 65%, transparent 80%)',
           borderRadius: '50%',
-          animation: 'rotate-reverse 15s linear infinite'
+          animation: 'rotate-reverse 20s linear infinite'
         }} />
 
         <div style={{
@@ -66,62 +66,101 @@ const LandingPage: React.FC = () => {
           justifyContent: 'center',
           color: '#000',
           fontWeight: 900,
-          fontSize: '1.4rem',
+          fontSize: '1.6rem',
           textAlign: 'center',
-          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)'
+          boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)',
+          letterSpacing: '-1px'
         }}>
           ASIK<br/>KANI
         </div>
-        <div style={{
-          position: 'absolute',
-          width: '8px',
-          height: '8px',
-          background: '#050505',
-          borderRadius: '50%'
-        }} />
       </div>
 
-      {/* Info Content */}
+      {/* Info Content - Staggered Animations */}
       <div style={{
         zIndex: 101,
-        maxWidth: '900px',
+        maxWidth: '1000px',
         width: '90%',
-        paddingLeft: '35%',
+        paddingLeft: '38%',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1.5rem',
+        gap: '2rem',
         pointerEvents: 'auto'
       }}>
-        <div>
-          <h2 style={{ fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '6px', color: '#ff4d00', margin: 0, marginBottom: '0.5rem' }}>AI / ML BUILDER</h2>
-          <h1 style={{ fontSize: '6rem', margin: 0, fontWeight: 900, lineHeight: 0.85 }}>ASIK KANI</h1>
+        <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <h2 style={{ 
+            fontSize: '1rem', 
+            textTransform: 'uppercase', 
+            letterSpacing: '8px', 
+            color: '#ff4d00', 
+            margin: 0, 
+            marginBottom: '0.8rem',
+            fontWeight: 700 
+          }}>
+            AI / ML ARCHITECT
+          </h2>
+          <h1 style={{ 
+            fontSize: '7.5rem', 
+            margin: 0, 
+            fontWeight: 900, 
+            lineHeight: 0.8, 
+            letterSpacing: '-5px',
+            background: 'linear-gradient(to bottom, #fff 50%, #666 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            ASIK KANI
+          </h1>
         </div>
-        <p style={{ fontSize: '1.6rem', color: '#bbb', maxWidth: '550px', margin: 0 }}>
-          Building <span style={{ color: '#fff', fontWeight: 600 }}>Interpretable AI</span>, LLM pipelines, and autonomous agents.
+
+        <p className="fade-in-up" style={{ 
+          fontSize: '1.8rem', 
+          lineHeight: 1.2, 
+          color: '#999', 
+          maxWidth: '600px', 
+          margin: 0, 
+          fontWeight: 300,
+          animationDelay: '0.4s'
+        }}>
+          Engineering <span style={{ color: '#fff', fontWeight: 600 }}>Interpretable AI</span>, 
+          autonomous agents, and high-performance LLM pipelines.
         </p>
-        <div style={{ display: 'flex', gap: '4rem', marginTop: '1rem' }}>
+
+        <div className="fade-in-up" style={{ 
+          display: 'flex', 
+          gap: '5rem', 
+          marginTop: '1rem',
+          animationDelay: '0.6s'
+        }}>
           <div>
-            <div style={{ fontSize: '3rem', fontWeight: 900 }}>5</div>
-            <div style={{ fontSize: '0.75rem', color: '#666', letterSpacing: '3px' }}>HACKATHON WINS</div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff' }}>5</div>
+            <div style={{ fontSize: '0.7rem', color: '#555', letterSpacing: '4px', fontWeight: 800 }}>CHAMPION WINS</div>
           </div>
+          <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
           <div>
-            <div style={{ fontSize: '3rem', fontWeight: 900 }}>40+</div>
-            <div style={{ fontSize: '0.75rem', color: '#666', letterSpacing: '3px' }}>PUBLIC REPOS</div>
+            <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff' }}>40+</div>
+            <div style={{ fontSize: '0.7rem', color: '#555', letterSpacing: '4px', fontWeight: 800 }}>PUBLIC REPOS</div>
           </div>
         </div>
+
         <button 
           onClick={() => setHasStarted(true)}
+          className="fade-in-up enter-button"
           style={{
             marginTop: '2.5rem',
             width: 'fit-content',
             background: 'white',
             color: 'black',
             border: 'none',
-            padding: '1.4rem 4rem',
+            padding: '1.5rem 5rem',
             fontSize: '1.2rem',
-            fontWeight: 800,
+            fontWeight: 900,
             cursor: 'pointer',
-            letterSpacing: '4px'
+            letterSpacing: '5px',
+            textTransform: 'uppercase',
+            animationDelay: '0.8s',
+            transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
           Enter Experience
@@ -129,6 +168,27 @@ const LandingPage: React.FC = () => {
       </div>
 
       <style>{`
+        .fade-in-up {
+          opacity: 0;
+          transform: translateY(30px);
+          animation: fadeInUp 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        .enter-button:hover {
+          background: #ff4d00 !important;
+          color: white !important;
+          transform: scale(1.05) translateY(-5px);
+          box-shadow: 0 20px 40px rgba(255, 77, 0, 0.3);
+        }
+        .enter-button:active {
+          transform: scale(0.98);
+        }
+        @keyframes fadeInUp {
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breathe {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.03); }
+        }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes rotate-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
       `}</style>

@@ -11,51 +11,26 @@ const Tonearm: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
   useEffect(() => {
     if (armRef.current) {
       if (isPlaying) {
-        // Move arm to the record
-        gsap.to(armRef.current.rotation, {
-          y: -Math.PI / 6,
-          duration: 1.5,
-          ease: 'power2.inOut'
-        });
-        // Drop needle slightly
-        gsap.to(armRef.current.rotation, {
-          x: 0.05,
-          duration: 0.8,
-          delay: 1.2,
-          ease: 'bounce.out'
-        });
+        gsap.to(armRef.current.rotation, { y: -Math.PI / 6, duration: 1.5, ease: 'power2.inOut' });
+        gsap.to(armRef.current.rotation, { x: 0.05, duration: 0.8, delay: 1.2, ease: 'bounce.out' });
       } else {
-        // Raise needle
-        gsap.to(armRef.current.rotation, {
-          x: 0,
-          duration: 0.5,
-          ease: 'power2.in'
-        });
-        // Move arm back to rest
-        gsap.to(armRef.current.rotation, {
-          y: 0,
-          duration: 1.0,
-          delay: 0.2,
-          ease: 'power2.inOut'
-        });
+        gsap.to(armRef.current.rotation, { x: 0, duration: 0.5, ease: 'power2.in' });
+        gsap.to(armRef.current.rotation, { y: 0, duration: 1.0, delay: 0.2, ease: 'power2.inOut' });
       }
     }
   }, [isPlaying]);
 
   return (
     <group position={[1.0, 0.9, -0.8]} ref={armRef}>
-      {/* Arm Base */}
       <mesh position={[0, -0.1, 0]}>
         <cylinderGeometry args={[0.1, 0.1, 0.4, 16]} />
         <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
       </mesh>
-      {/* The Arm itself */}
       <group position={[0, 0.1, 0]}>
         <mesh position={[0, 0, 1.0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.02, 0.02, 2.0, 8]} />
           <meshStandardMaterial color="#888" metalness={0.9} roughness={0.1} />
         </mesh>
-        {/* Headshell / Needle area */}
         <mesh position={[0, -0.05, 2.0]}>
           <boxGeometry args={[0.1, 0.05, 0.15]} />
           <meshStandardMaterial color="#111" />
@@ -87,8 +62,22 @@ const VinylPlayer: React.FC<VinylPlayerProps> = ({ position = [0, 0, 0] }) => {
   const isPlaying = useStore((state) => state.isPlaying);
   const activeColor = activeMenu ? activeMenu.color : '#111';
 
-  // Load the downloaded 3D Model securely
   const { scene } = useGLTF('/models/voxel_turntable.glb');
+
+  // Ensure original model details pop with shadows
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // Improve material appearance if needed
+        if (child.material) {
+          child.material.metalness = 0.5;
+          child.material.roughness = 0.4;
+        }
+      }
+    });
+  }, [scene]);
 
   useFrame((state) => {
     if (isPlaying && platterRef.current) {
@@ -98,35 +87,24 @@ const VinylPlayer: React.FC<VinylPlayerProps> = ({ position = [0, 0, 0] }) => {
 
   return (
     <group position={position}>
-      {/* Complete Vinyl Player Model */}
       <group position={[0, -0.1, 0]} scale={[0.07, 0.07, 0.07]}>
         <primitive object={scene} />
       </group>
 
-      {/* Tonearm Animation - Raised to sit on top */}
       <Tonearm isPlaying={isPlaying} />
 
-      {/* Floating active record - Raised to sit perfectly on top of the platter (approx y=0.85) */}
-      <group position={[0, 0.85, 0]} ref={platterRef}>
+      {/* Floating active record - Sitting perfectly on the model's platter */}
+      <group position={[0, 0.81, 0]} ref={platterRef}>
         {activeMenu && (
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[1.05, 1.05, 0.04, 32]} />
             <meshStandardMaterial color="#050505" roughness={0.1} metalness={0.5} />
-            
-            {/* Record Label with optional texture */}
-            <Suspense fallback={
-              <mesh position={[0, 0.021, 0]}>
-                <cylinderGeometry args={[0.35, 0.35, 0.01, 32]} />
-                <meshStandardMaterial color={activeColor} roughness={0.8} />
-              </mesh>
-            }>
+            <Suspense fallback={<mesh><cylinderGeometry args={[0.35, 0.35, 0.01, 32]} /><meshStandardMaterial color={activeColor} /></mesh>}>
               <RecordLabel color={activeColor} url={activeMenu.image} />
             </Suspense>
-
-            {/* Subtle Grooves effect */}
             <mesh position={[0, 0.021, 0]} rotation={[-Math.PI / 2, 0, 0]}>
               <ringGeometry args={[0.4, 1.0, 64]} />
-              <meshStandardMaterial color="#000000" transparent opacity={0.4} wireframe />
+              <meshStandardMaterial color="#000000" transparent opacity={0.6} />
             </mesh>
           </mesh>
         )}

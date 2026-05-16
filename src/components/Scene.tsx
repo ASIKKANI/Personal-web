@@ -27,39 +27,42 @@ const Scene: React.FC = () => {
 
   return (
     <group position={[0, 0, 0]}>
+      {/* Interactive Title - Peak Design Aesthetic with Dual Tones */}
+      <group 
+        position={[-1.2, 4.2, -2]}
+        onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+        onPointerOut={() => { document.body.style.cursor = 'default'; }}
+      >
+        <Text
+          position={[0, 0, 0]}
+          fontSize={0.5}
+          color="#ffffff"
+          font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf"
+          anchorX="right"
+          anchorY="middle"
+          letterSpacing={0.2}
+        >
+          PORT
+        </Text>
+        <Text
+          position={[0, 0, 0]}
+          fontSize={0.5}
+          color="#ff4d00"
+          font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf"
+          anchorX="left"
+          anchorY="middle"
+          letterSpacing={0.2}
+        >
+          FOLIO
+        </Text>
+      </group>
+
       <group position={[0, 0, 0]}>
         <VinylPlayer />
-        
-        {/* Navigation Button - Correct Position and Size */}
-        <group 
-          position={[2.0, 0.2, 0.5]} 
-          onClick={(e) => {
-            e.stopPropagation();
-            setViewMode(viewMode === 'shelf' ? 'player' : 'shelf');
-          }}
-          onPointerOver={() => handleTextHover(true)}
-          onPointerOut={() => handleTextHover(false)}
-        >
-          <mesh visible={false}>
-            <boxGeometry args={[1.5, 1.0, 1.0]} />
-          </mesh>
-
-          <group ref={stackRef}>
-            <Text 
-              position={[0, 0, 0]} 
-              fontSize={0.15} 
-              color="#ffffff" 
-              anchorX="center" 
-              anchorY="middle"
-              font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf"
-            >
-              {viewMode === 'shelf' ? '← PLAYER' : 'RECORDS →'}
-            </Text>
-          </group>
-        </group>
       </group>
       
-      <group position={[4.0, 0, 0.5]} visible={viewMode === 'shelf'}>
+      {/* Right side: Shelf Context - Moved closer to the player (x=2.8) */}
+      <group position={[2.8, 0, 0.5]} visible={viewMode === 'shelf'}>
         <RecordShelf />
       </group>
     </group>

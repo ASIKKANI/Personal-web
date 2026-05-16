@@ -36,20 +36,45 @@ const RecordItem: React.FC<RecordItemProps> = ({ menu, index }) => {
   const materialFromGLTF = coverMaterialArray[index % coverMaterialArray.length];
 
   const isActive = activeMenu?.id === menu.id;
-  const basePosition: [number, number, number] = [index * 0.9, 0.0, index * -0.1];
-  const baseRotation: [number, number, number] = [0, Math.PI / 32, -Math.PI / 24]; 
+  
+  // Premium fan-out layout
+  const fanAngle = (index - 1.5) * 0.05; 
+  const basePosition: [number, number, number] = [index * 1.4, 0.0, index * -0.15];
+  const baseRotation: [number, number, number] = [0, Math.PI / 16 + fanAngle, -Math.PI / 18]; 
 
   const handlePointerOver = () => {
     document.body.style.cursor = 'pointer';
     if (!isActive && groupRef.current) {
-      gsap.to(groupRef.current.position, { y: 0.8, z: 0.5, duration: 0.4, ease: 'back.out(1.7)' });
+      gsap.to(groupRef.current.position, {
+        y: basePosition[1] + 1.2, // Higher pop
+        z: basePosition[2] + 0.6, // More forward
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.75)', // High-end springy feel
+      });
+      gsap.to(groupRef.current.rotation, {
+        y: 0,
+        z: 0,
+        duration: 0.5,
+        ease: 'power2.out'
+      });
     }
   };
 
   const handlePointerOut = () => {
     document.body.style.cursor = 'default';
     if (!isActive && groupRef.current) {
-      gsap.to(groupRef.current.position, { y: 0, z: basePosition[2], duration: 0.4 });
+      gsap.to(groupRef.current.position, {
+        y: basePosition[1],
+        z: basePosition[2],
+        duration: 0.7,
+        ease: 'power4.out',
+      });
+      gsap.to(groupRef.current.rotation, {
+        y: baseRotation[1],
+        z: baseRotation[2],
+        duration: 0.7,
+        ease: 'power4.out'
+      });
     }
   };
 
@@ -68,20 +93,36 @@ const RecordItem: React.FC<RecordItemProps> = ({ menu, index }) => {
     }
   };
 
+  const labels = ['ABOUT ME', 'EXPERIENCES', 'PROJECTS', 'CONNECT'];
+
   return (
     <group ref={groupRef} position={basePosition} rotation={baseRotation} onClick={handleClick} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
       <mesh visible={false}><boxGeometry args={[0.8, 3.5, 0.5]} /></mesh>
+      
+      {/* Portfolio Category Label & Arrow - Moved left for alignment */}
+      <group position={[-0.3, 3.2, 0]}>
+        <Text
+          fontSize={0.2}
+          color="#ff4d00"
+          font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf"
+          anchorX="center"
+          anchorY="bottom"
+          letterSpacing={0.2}
+          fontWeight="bold"
+        >
+          {labels[index] || 'SECTION'}
+        </Text>
+        <mesh position={[0, -0.2, 0]} rotation={[0, 0, -Math.PI]}>
+          <coneGeometry args={[0.05, 0.15, 4]} />
+          <meshBasicMaterial color="#ff4d00" />
+        </mesh>
+      </group>
+
       <group position={[0, 1.25, 0]}>
         <mesh position={[0, 0, -0.01]}><boxGeometry args={[2.58, 2.58, 0.04]} /><meshStandardMaterial color="#ffffff" metalness={0.8} /></mesh>
         <Suspense fallback={<mesh><boxGeometry args={[2.5, 2.5, 0.05]} /><meshStandardMaterial {...materialFromGLTF} /></mesh>}>
           <RecordCover menu={menu} materialFromGLTF={materialFromGLTF} />
         </Suspense>
-        <mesh position={[0, 1.1, 0.03]}>
-          <planeGeometry args={[2.0, 0.5]} /><meshStandardMaterial color="#000000" transparent opacity={0.6} />
-          <Text position={[0, 0, 0.01]} fontSize={0.2} color="#ffffff" anchorX="center" anchorY="middle" font="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf">
-            {menu.title.toUpperCase()}
-          </Text>
-        </mesh>
       </group>
     </group>
   );
