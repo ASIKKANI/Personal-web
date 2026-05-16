@@ -3,7 +3,6 @@ import VinylPlayer from './VinylPlayer';
 import RecordShelf from './RecordShelf';
 import { Text } from '@react-three/drei';
 import { useStore } from '../store/useStore';
-import * as THREE from 'three';
 
 // Final cinematic scene stabilization
 const Scene: FC = () => {
