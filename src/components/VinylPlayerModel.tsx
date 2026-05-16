@@ -9,12 +9,6 @@ Title: vinyl record player
 
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
-import type { GLTF } from 'three-stdlib'
-
-type GLTFResult = GLTF & {
-  nodes: { [key: string]: THREE.Mesh }
-  materials: { [key: string]: THREE.MeshStandardMaterial }
-}
 
 export function Model(props: any) {
   const { nodes, materials } = useGLTF('/models/vinyl_record_player.glb') as any

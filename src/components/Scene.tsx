@@ -9,7 +9,6 @@ import * as THREE from 'three';
 const Scene: FC = () => {
   const viewMode = useStore((state) => state.viewMode);
   const hasStarted = useStore((state) => state.hasStarted);
-  const stackRef = useRef<THREE.Group>(null);
 
   if (!hasStarted) return null;
 
