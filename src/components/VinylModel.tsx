@@ -7,7 +7,6 @@ Source: https://sketchfab.com/3d-models/vinyls-1-159fbaa320324c98af849a49eeae246
 Title: VINYLS 1
 */
 
-import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props: any) {

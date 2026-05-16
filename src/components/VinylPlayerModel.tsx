@@ -7,7 +7,6 @@ Source: https://sketchfab.com/3d-models/vinyl-record-player-aab1ecd2ccb34bfbac7c
 Title: vinyl record player
 */
 
-import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props: any) {
