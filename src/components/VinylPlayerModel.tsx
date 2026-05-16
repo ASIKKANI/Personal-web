@@ -17,7 +17,7 @@ type GLTFResult = GLTF & {
 }
 
 export function Model(props: any) {
-  const { nodes, materials } = useGLTF('/models/vinyl_record_player.glb') as GLTFResult
+  const { nodes, materials } = useGLTF('/models/vinyl_record_player.glb') as any
   return (
     <group {...props} dispose={null}>
       <group position={[0, 4.389, -0.501]} rotation={[-Math.PI, 0, -Math.PI]} scale={[-1, 1, 1]}>

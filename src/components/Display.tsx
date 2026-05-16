@@ -1,7 +1,7 @@
-import React from 'react';
+import { useState, useEffect, FC } from 'react';
 import { useStore } from '../store/useStore';
 
-const Display: React.FC = () => {
+const Display: FC = () => {
   const activeMenu = useStore((state) => state.activeMenu);
   const isPlaying = useStore((state) => state.isPlaying);
   const viewMode = useStore((state) => state.viewMode);

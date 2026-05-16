@@ -17,7 +17,7 @@ type GLTFResult = GLTF & {
 }
 
 export function Model(props: any) {
-  const { nodes, materials } = useGLTF('/models/vinyls_1.glb') as GLTFResult
+  const { nodes, materials } = useGLTF('/models/vinyls_1.glb') as any
   return (
     <group {...props} dispose={null}>
       <group position={[-0.129, 0.157, -0.339]} rotation={[Math.PI / 2, 0, -Math.PI / 2]}>
