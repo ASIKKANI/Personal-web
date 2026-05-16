@@ -7,6 +7,8 @@ interface MenuState {
   audioSrc: string;
   color: string;
   image?: string;
+  section?: string;
+  content?: any;
 }
 
 interface AppState {

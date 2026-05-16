@@ -8,24 +8,16 @@ Title: vinyl record player
 */
 
 import * as THREE from 'three'
-import React from 'react'
 import { useGLTF } from '@react-three/drei'
-import { GLTF } from 'three-stdlib'
+import type { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
-  nodes: {
-    Object_4: THREE.Mesh
-    Object_5: THREE.Mesh
-  }
-  materials: {
-    ['Material.001']: THREE.MeshStandardMaterial
-    ['Material.002']: THREE.MeshStandardMaterial
-  }
-  animations: GLTFAction[]
+  nodes: { [key: string]: THREE.Mesh }
+  materials: { [key: string]: THREE.MeshStandardMaterial }
 }
 
-export function Model(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/vinyl_record_player.glb') as GLTFResult
+export function Model(props: any) {
+  const { nodes, materials } = useGLTF('/models/vinyl_record_player.glb') as GLTFResult
   return (
     <group {...props} dispose={null}>
       <group position={[0, 4.389, -0.501]} rotation={[-Math.PI, 0, -Math.PI]} scale={[-1, 1, 1]}>

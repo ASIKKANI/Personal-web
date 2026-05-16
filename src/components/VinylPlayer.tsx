@@ -1,11 +1,11 @@
-import React, { useRef, useEffect, Suspense } from 'react';
+import { useRef, useEffect, Suspense, FC } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '../store/useStore';
 import { useGLTF, useTexture } from '@react-three/drei';
 import gsap from 'gsap';
 
-const Tonearm: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
+const Tonearm: FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
   const armRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Tonearm: React.FC<{ isPlaying: boolean }> = ({ isPlaying }) => {
   );
 };
 
-const RecordLabel: React.FC<{ color: string, url?: string }> = ({ color, url }) => {
+const RecordLabel: FC<{ color: string, url?: string }> = ({ color, url }) => {
   // Use a fallback to prevent error if image is missing
   const texture = url ? useTexture(url) : null;
   
@@ -56,7 +56,11 @@ const RecordLabel: React.FC<{ color: string, url?: string }> = ({ color, url }) 
   );
 };
 
-const VinylPlayer: React.FC<VinylPlayerProps> = ({ position = [0, 0, 0] }) => {
+interface VinylPlayerProps {
+  position?: [number, number, number];
+}
+
+const VinylPlayer: FC<VinylPlayerProps> = ({ position = [0, 0, 0] }) => {
   const platterRef = useRef<THREE.Group>(null);
   const activeMenu = useStore((state) => state.activeMenu);
   const isPlaying = useStore((state) => state.isPlaying);
@@ -79,7 +83,7 @@ const VinylPlayer: React.FC<VinylPlayerProps> = ({ position = [0, 0, 0] }) => {
     });
   }, [scene]);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (isPlaying && platterRef.current) {
       platterRef.current.rotation.y -= 0.05;
     }

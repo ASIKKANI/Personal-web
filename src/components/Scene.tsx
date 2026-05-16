@@ -3,25 +3,12 @@ import VinylPlayer from './VinylPlayer';
 import RecordShelf from './RecordShelf';
 import { Text } from '@react-three/drei';
 import { useStore } from '../store/useStore';
-import gsap from 'gsap';
 import * as THREE from 'three';
 
 const Scene: React.FC = () => {
-  const setViewMode = useStore((state) => state.setViewMode);
   const viewMode = useStore((state) => state.viewMode);
   const hasStarted = useStore((state) => state.hasStarted);
   const stackRef = useRef<THREE.Group>(null);
-
-  const handleTextHover = (hovering: boolean) => {
-    document.body.style.cursor = hovering ? 'pointer' : 'default';
-    if (stackRef.current) {
-      gsap.to(stackRef.current.position, {
-        y: hovering ? 0.2 : 0.0,
-        duration: 0.4,
-        ease: 'power2.out'
-      });
-    }
-  };
 
   if (!hasStarted) return null;
 

@@ -1,7 +1,7 @@
-import React from 'react';
+import { FC } from 'react';
 import { useStore } from '../store/useStore';
 
-const LandingPage: React.FC = () => {
+const LandingPage: FC = () => {
   const setHasStarted = useStore((state) => state.setHasStarted);
 
   return (

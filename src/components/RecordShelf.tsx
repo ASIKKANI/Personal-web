@@ -1,4 +1,4 @@
-import React, { useRef, Suspense } from 'react';
+import { useRef, Suspense, FC } from 'react';
 import * as THREE from 'three';
 import { useStore } from '../store/useStore';
 import { MENUS } from '../constants';
@@ -10,7 +10,7 @@ interface RecordItemProps {
   index: number;
 }
 
-const RecordCover: React.FC<{ menu: typeof MENUS[0], materialFromGLTF: any }> = ({ menu, materialFromGLTF }) => {
+const RecordCover: FC<{ menu: typeof MENUS[0], materialFromGLTF: any }> = ({ menu, materialFromGLTF }) => {
   const texture = menu.image ? useTexture(menu.image) : null;
   return (
     <mesh castShadow receiveShadow>
@@ -24,7 +24,7 @@ const RecordCover: React.FC<{ menu: typeof MENUS[0], materialFromGLTF: any }> = 
   );
 };
 
-const RecordItem: React.FC<RecordItemProps> = ({ menu, index }) => {
+const RecordItem: FC<RecordItemProps> = ({ menu, index }) => {
   const groupRef = useRef<THREE.Group>(null);
   const setActiveMenu = useStore((state) => state.setActiveMenu);
   const activeMenu = useStore((state) => state.activeMenu);
@@ -128,7 +128,7 @@ const RecordItem: React.FC<RecordItemProps> = ({ menu, index }) => {
   );
 };
 
-const RecordShelf: React.FC = () => {
+const RecordShelf: FC = () => {
   return (
     <group position={[0.5, 0, 0.5]}>
       {MENUS.map((menu, index) => <RecordItem key={menu.id} menu={menu} index={index} />)}
