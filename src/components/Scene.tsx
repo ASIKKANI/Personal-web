@@ -1,11 +1,12 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
+import type { FC } from 'react';
 import VinylPlayer from './VinylPlayer';
 import RecordShelf from './RecordShelf';
 import { Text } from '@react-three/drei';
 import { useStore } from '../store/useStore';
 import * as THREE from 'three';
 
-const Scene: React.FC = () => {
+const Scene: FC = () => {
   const viewMode = useStore((state) => state.viewMode);
   const hasStarted = useStore((state) => state.hasStarted);
   const stackRef = useRef<THREE.Group>(null);

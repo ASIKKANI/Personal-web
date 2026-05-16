@@ -1,4 +1,5 @@
-import { useRef, Suspense, FC } from 'react';
+import { useRef, Suspense } from 'react';
+import type { FC } from 'react';
 import * as THREE from 'three';
 import { useStore } from '../store/useStore';
 import { MENUS } from '../constants';

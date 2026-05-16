@@ -1,4 +1,5 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { useStore } from '../store/useStore';
 
 const Display: FC = () => {
@@ -8,8 +9,8 @@ const Display: FC = () => {
   const setIsPlaying = useStore((state) => state.setIsPlaying);
   const setActiveMenu = useStore((state) => state.setActiveMenu);
   
-  const [showTools, setShowTools] = React.useState(false);
-  const [selectedProject, setSelectedProject] = React.useState<any>(null);
+  const [showTools, setShowTools] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const handleClose = () => {
     setIsPlaying(false);
@@ -20,7 +21,7 @@ const Display: FC = () => {
   };
 
   // Reset selected project when switching albums
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedProject(null);
     setShowTools(false);
   }, [activeMenu?.id]);
