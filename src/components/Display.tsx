@@ -38,8 +38,8 @@ const Display: FC = () => {
       height: '100vh',
       pointerEvents: isVisible ? 'auto' : 'none',
       opacity: isVisible ? 1 : 0,
-      background: 'rgba(3, 3, 3, 0.45)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(5, 5, 5, 0.6)',
+      backdropFilter: 'blur(12px)',
       transition: 'opacity 0.8s ease, transform 0.8s ease',
       transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
       display: 'flex',
@@ -49,10 +49,8 @@ const Display: FC = () => {
       paddingRight: '3rem',
       zIndex: 10,
       color: 'white',
-      fontFamily: "'Inter', sans-serif",
-      border: 'none',
-      maskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 25%)',
-      WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 25%)'
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      borderLeft: '1px solid rgba(255,255,255,0.05)',
     }}>
       {activeMenu && (
         <div style={{
@@ -60,64 +58,61 @@ const Display: FC = () => {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.8rem'
+          gap: '2rem'
         }}>
           {/* Header Section */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <div className="animate-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ width: '30px', height: '1px', background: '#ff4d00' }} />
-              <span style={{ color: '#ff4d00', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '4px' }}>
+              <span style={{ color: '#ff4d00', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '4px' }}>
                 {selectedProject ? 'TRACK DETAILS' : activeMenu.section || 'SECTION'}
               </span>
             </div>
             
-            <h1 style={{ color: 'white', margin: '0', fontSize: '3.5rem', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-2px' }}>
+            <h1 className="animate-fade-up delay-100" style={{ 
+              margin: '0', 
+              fontSize: '3.5rem', 
+              fontWeight: 900, 
+              lineHeight: 1.1, 
+              letterSpacing: '-2px',
+              background: 'linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
               {selectedProject ? selectedProject.title : activeMenu.title}
             </h1>
             
             {(selectedProject?.subtitle || activeMenu.content?.tagline) && (
-              <p style={{ color: '#ff4d00', marginTop: '0.2rem', fontSize: '1.1rem', fontWeight: 600, opacity: 0.9 }}>
+              <p className="animate-fade-up delay-200" style={{ color: '#ff4d00', marginTop: '0.2rem', fontSize: '1.1rem', fontWeight: 600, opacity: 0.9 }}>
                 {selectedProject ? selectedProject.subtitle : activeMenu.content.tagline}
               </p>
             )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem' }} className="custom-scroll">
+          <div className="custom-scroll animate-fade-up delay-300" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem', paddingBottom: '2rem' }}>
             
             {/* 1. PROJECT TRACK LIST VIEW */}
             {activeMenu.id === 'projects' && !selectedProject && activeMenu.content?.projectsList && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-                <p style={{ opacity: 0.6, fontSize: '0.7rem', color: 'white', letterSpacing: '2px', marginBottom: '1rem' }}>SELECT A TRACK TO INSPECT</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
+                <p style={{ opacity: 0.6, fontSize: '0.7rem', color: 'white', letterSpacing: '2px', marginBottom: '0.5rem' }}>SELECT A TRACK TO INSPECT</p>
                 {activeMenu.content.projectsList.map((project: any, i: number) => (
                   <div 
                     key={project.id}
                     onClick={() => setSelectedProject(project)}
-                    className="track-item"
+                    className="track-item glass-card animate-slide-right"
                     style={{
-                      padding: '1.2rem',
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '4px',
+                      animationDelay: `${(i+1) * 100}ms`,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '1.5rem',
-                      transition: 'all 0.3s ease',
                       pointerEvents: 'auto'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 77, 0, 0.2)';
-                      e.currentTarget.style.borderColor = 'rgba(255, 77, 0, 0.5)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
                     }}
                   >
                     <span style={{ fontSize: '0.8rem', color: '#ff4d00', fontWeight: 900 }}>0{i + 1}</span>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'white' }}>{project.title}</span>
-                      <span style={{ fontSize: '0.7rem', color: 'white', opacity: 0.7, letterSpacing: '1px' }}>{project.subtitle}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'white', opacity: 0.7, letterSpacing: '1px', marginTop: '0.2rem' }}>{project.subtitle}</span>
                     </div>
                   </div>
                 ))}
@@ -126,19 +121,21 @@ const Display: FC = () => {
 
             {/* 2. PROJECT DETAIL VIEW */}
             {selectedProject && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                <p style={{ lineHeight: '1.8', fontSize: '1rem', color: '#ffffff', fontWeight: 300, margin: 0 }}>
-                  {selectedProject.description}
-                </p>
+              <div className="animate-fade-up delay-100" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div className="glass-card">
+                  <p style={{ lineHeight: '1.8', fontSize: '1rem', color: '#ffffff', fontWeight: 300, margin: 0 }}>
+                    {selectedProject.description}
+                  </p>
+                </div>
 
                 {selectedProject.features && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                     <h4 style={{ margin: 0, fontSize: '0.7rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px' }}>KEY FEATURES</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                       {selectedProject.features.map((feature: any, i: number) => (
-                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>• {feature.name}</span>
-                          <span style={{ fontSize: '0.75rem', color: '#ffffff', opacity: 0.7, lineHeight: 1.4 }}>{feature.detail}</span>
+                        <div key={i} className="glass-card animate-slide-right" style={{ animationDelay: `${i * 100}ms`, padding: '1.2rem', gap: '0.5rem', display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>{feature.name}</span>
+                          <span style={{ fontSize: '0.75rem', color: '#ffffff', opacity: 0.7, lineHeight: 1.5 }}>{feature.detail}</span>
                         </div>
                       ))}
                     </div>
@@ -146,14 +143,9 @@ const Display: FC = () => {
                 )}
 
                 {selectedProject.impact && (
-                  <div style={{
-                    background: 'rgba(255, 77, 0, 0.15)',
-                    borderLeft: '4px solid #ff4d00',
-                    padding: '1.2rem 1.8rem',
-                    borderRadius: '2px'
-                  }}>
+                  <div className="glass-card animate-fade-up delay-300" style={{ borderLeft: '4px solid #ff4d00' }}>
                     <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px', display: 'block', marginBottom: '0.5rem' }}>CORE IMPACT</span>
-                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#ffffff' }}>{selectedProject.impact}</p>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#ffffff', lineHeight: 1.6 }}>{selectedProject.impact}</p>
                   </div>
                 )}
 
@@ -161,17 +153,24 @@ const Display: FC = () => {
                   onClick={() => setSelectedProject(null)}
                   style={{
                     background: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(255,255,255,0.2)',
                     color: 'white',
                     cursor: 'pointer',
                     fontSize: '0.7rem',
                     fontWeight: 800,
-                    padding: '0.8rem 1.5rem',
-                    borderRadius: '2px',
+                    padding: '1rem 2rem',
+                    borderRadius: '30px',
                     textTransform: 'uppercase',
                     letterSpacing: '2px',
                     width: 'fit-content',
-                    pointerEvents: 'auto'
+                    pointerEvents: 'auto',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
                   }}
                 >
                   ← Back to Project List
@@ -183,21 +182,21 @@ const Display: FC = () => {
             {!selectedProject && activeMenu.id !== 'projects' && (
               <>
                 {activeMenu.content?.bio && (
-                  <p style={{ lineHeight: '1.8', fontSize: '0.95rem', color: '#ffffff', fontWeight: 300, margin: 0 }}>
+                  <p style={{ lineHeight: '1.8', fontSize: '1rem', color: 'rgba(255,255,255,0.9)', fontWeight: 300, margin: 0 }}>
                     {activeMenu.content.bio}
                   </p>
                 )}
 
                 {activeMenu.content?.roles && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
                     {activeMenu.content.roles.map((role: any, i: number) => (
-                      <div key={i} style={{ borderLeft: '2px solid rgba(255, 77, 0, 0.4)', paddingLeft: '1.5rem', position: 'relative' }}>
-                        <div style={{ position: 'absolute', left: '-5px', top: '0', width: '9px', height: '9px', borderRadius: '50%', background: '#ff4d00' }} />
-                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'white' }}>{role.title}</h3>
-                        <p style={{ margin: '0.3rem 0', fontSize: '0.8rem', color: '#ff4d00', fontWeight: 600 }}>{role.company} • <span style={{ color: 'white', opacity: 0.8 }}>{role.period}</span></p>
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem', flexWrap: 'wrap' }}>
+                      <div key={i} className="glass-card animate-slide-right" style={{ animationDelay: `${i * 100}ms` }}>
+                        <div style={{ position: 'absolute', left: '0', top: '0', width: '4px', height: '100%', background: '#ff4d00' }} />
+                        <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'white' }}>{role.title}</h3>
+                        <p style={{ margin: '0.5rem 0', fontSize: '0.85rem', color: '#ff4d00', fontWeight: 600 }}>{role.company} • <span style={{ color: 'white', opacity: 0.6 }}>{role.period}</span></p>
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
                           {role.skills.map((skill: string, j: number) => (
-                            <span key={j} style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.6rem', borderRadius: '2px', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}>{skill}</span>
+                            <span key={j} style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.05)', padding: '0.3rem 0.8rem', borderRadius: '30px', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}>{skill}</span>
                           ))}
                         </div>
                       </div>
@@ -206,29 +205,29 @@ const Display: FC = () => {
                 )}
 
                 {activeMenu.id === 'about-me' && activeMenu.content && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '1.5rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                      <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '1px' }}>EDUCATION</span>
-                      <span style={{ fontSize: '0.9rem', color: 'white' }}>{activeMenu.content.education}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div className="glass-card animate-slide-right delay-100" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px' }}>EDUCATION</span>
+                      <span style={{ fontSize: '1rem', color: 'white', fontWeight: 500 }}>{activeMenu.content.education}</span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                      <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '1px' }}>TECHNICAL FOCUS</span>
-                      <span style={{ fontSize: '0.9rem', color: 'white' }}>{activeMenu.content.focus}</span>
+                    <div className="glass-card animate-slide-right delay-200" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px' }}>TECHNICAL FOCUS</span>
+                      <span style={{ fontSize: '1rem', color: 'white', fontWeight: 500, lineHeight: 1.5 }}>{activeMenu.content.focus}</span>
                     </div>
 
                     {/* Hobbies Section */}
                     {activeMenu.content.hobbies && (
-                      <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <span style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '1px' }}>HOBBIES & PASSIONS</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                      <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <span className="animate-fade-up delay-300" style={{ fontSize: '0.65rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px' }}>HOBBIES & PASSIONS</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.8rem' }}>
                           {activeMenu.content.hobbies.map((hobby: any, i: number) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                              <span style={{ fontSize: '1.2rem' }}>
+                            <div key={i} className="glass-card animate-slide-right" style={{ animationDelay: `${(i+4)*100}ms`, display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                              <span style={{ fontSize: '1.8rem', filter: 'drop-shadow(0 0 10px rgba(255,77,0,0.3))' }}>
                                 {hobby.name === 'Audiophile' ? '🎵' : hobby.name === 'Poetry' ? '✍️' : '🎮'}
                               </span>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'white' }}>{hobby.name}</span>
-                                <span style={{ fontSize: '0.7rem', color: 'white', opacity: 0.7 }}>{hobby.detail}</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'white' }}>{hobby.name}</span>
+                                <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{hobby.detail}</span>
                               </div>
                             </div>
                           ))}
@@ -239,20 +238,18 @@ const Display: FC = () => {
                 )}
 
                 {activeMenu.content?.achievements && (
-                  <div style={{
-                    background: 'rgba(255, 77, 0, 0.15)',
-                    border: '1px solid rgba(255, 77, 0, 0.4)',
-                    padding: '1.2rem 1.8rem',
-                    borderRadius: '4px',
+                  <div className="glass-card animate-fade-up delay-500" style={{
+                    borderColor: 'rgba(255, 77, 0, 0.4)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '1rem',
+                    gap: '1.2rem',
                     color: '#ff4d00',
                     fontWeight: 900,
                     fontSize: '0.9rem',
-                    letterSpacing: '1px'
+                    letterSpacing: '1px',
+                    marginTop: '1rem'
                   }}>
-                    <span style={{ fontSize: '1.5rem' }}>🏆</span>
+                    <span style={{ fontSize: '1.8rem' }}>🏆</span>
                     <span>{activeMenu.content.achievements.toUpperCase()}</span>
                   </div>
                 )}
@@ -266,35 +263,22 @@ const Display: FC = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="glass-card animate-slide-right"
                         style={{
+                          animationDelay: `${(i+1) * 100}ms`,
                           textDecoration: 'none',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '1.5rem',
-                          background: 'rgba(255,255,255,0.05)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '4px',
                           color: 'white',
-                          transition: 'all 0.3s ease',
                           pointerEvents: 'auto'
                         }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 77, 0, 0.15)';
-                          e.currentTarget.style.borderColor = '#ff4d00';
-                          e.currentTarget.style.transform = 'translateX(10px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-                          e.currentTarget.style.transform = 'translateX(0)';
-                        }}
                       >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                           <span style={{ fontSize: '0.7rem', color: '#ff4d00', fontWeight: 900, letterSpacing: '2px' }}>{link.name.toUpperCase()}</span>
                           <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>{link.type === 'email' ? 'Send a Message' : `Visit ${link.name}`}</span>
                         </div>
-                        <span style={{ fontSize: '1.5rem' }}>→</span>
+                        <span style={{ fontSize: '1.5rem', opacity: 0.8 }}>→</span>
                       </a>
                     ))}
                   </div>
@@ -304,27 +288,22 @@ const Display: FC = () => {
 
             {/* Tools Grid Displayed when Toggled */}
             {showTools && (
-              <div style={{ 
+              <div className="glass-card animate-fade-up" style={{ 
                 marginTop: '1rem', 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', 
                 gap: '0.8rem',
-                padding: '1.5rem',
-                background: 'rgba(255,255,255,0.03)',
-                borderRadius: '4px',
-                border: '1px solid rgba(255,255,255,0.05)',
-                animation: 'fadeIn 0.5s ease'
               }}>
                 {allTools.map((tool, i) => (
                   <div key={i} style={{ 
-                    fontSize: '0.7rem', 
+                    fontSize: '0.75rem', 
                     color: 'white', 
-                    opacity: 0.8, 
+                    fontWeight: 600,
                     textAlign: 'center',
-                    padding: '0.5rem',
-                    background: 'rgba(255, 77, 0, 0.05)',
-                    border: '1px solid rgba(255, 77, 0, 0.1)',
-                    borderRadius: '2px'
+                    padding: '0.6rem',
+                    background: 'rgba(255, 77, 0, 0.1)',
+                    border: '1px solid rgba(255, 77, 0, 0.2)',
+                    borderRadius: '4px'
                   }}>
                     {tool}
                   </div>
@@ -333,23 +312,31 @@ const Display: FC = () => {
             )}
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <div className="animate-fade-up delay-400" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <button 
               onClick={handleClose}
-              className="stop-button"
               style={{
-                background: 'white',
+                background: '#ffffff',
                 border: 'none',
                 color: '#050505',
                 cursor: 'pointer',
-                fontSize: '0.8rem',
-                fontWeight: 800,
-                padding: '1rem 2.5rem',
-                borderRadius: '2px',
+                fontSize: '0.75rem',
+                fontWeight: 900,
+                padding: '1rem 2rem',
+                borderRadius: '30px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
                 transition: 'all 0.3s ease',
-                pointerEvents: 'auto'
+                pointerEvents: 'auto',
+                boxShadow: '0 4px 15px rgba(255,255,255,0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255,255,255,0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(255,255,255,0.2)';
               }}
             >
               Stop Playing
@@ -359,21 +346,27 @@ const Display: FC = () => {
               <button 
                 onClick={() => setShowTools(!showTools)}
                 style={{
-                  background: 'transparent',
-                  border: '1px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   color: 'white',
                   cursor: 'pointer',
-                  fontSize: '0.8rem',
+                  fontSize: '0.75rem',
                   fontWeight: 800,
                   padding: '1rem 2rem',
-                  borderRadius: '2px',
+                  borderRadius: '30px',
                   textTransform: 'uppercase',
                   letterSpacing: '2px',
                   transition: 'all 0.3s ease',
                   pointerEvents: 'auto'
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                }}
               >
-                {showTools ? 'Hide Tools' : 'View Tech Stack'}
+                {showTools ? 'Hide Tech Stack' : 'View Tech Stack'}
               </button>
             )}
           </div>
