@@ -1,4 +1,4 @@
-import { useRef, Suspense, useEffect } from 'react';
+import { useRef, Suspense, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sparkles, Environment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -71,24 +71,127 @@ function CameraRig({ controlsRef }: { controlsRef: any }) {
 function AudioManager() {
   const activeMenu = useStore((state) => state.activeMenu);
   const isPlaying = useStore((state) => state.isPlaying);
+  const setIsPlaying = useStore((state) => state.setIsPlaying);
+  const hasStarted = useStore((state) => state.hasStarted);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  
+  const [isMuted, setIsMuted] = useState(false);
+  const isMutedRef = useRef(isMuted);
 
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
-      audioRef.current.loop = true;
+      audioRef.current.loop = false; // Once a track stops playing, nothing should play
+      
+      audioRef.current.addEventListener('ended', () => {
+        setIsPlaying(false);
+      });
     }
-  }, []);
+  }, [setIsPlaying]);
 
   useEffect(() => {
-    if (audioRef.current && activeMenu) {
+    isMutedRef.current = isMuted;
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    if (activeMenu && isPlaying) {
+      // Avoid restarting if it's already playing the correct track
+      if (audioRef.current.src.endsWith(encodeURI(activeMenu.audioSrc)) && !audioRef.current.paused) {
+        return;
+      }
+      
       audioRef.current.src = activeMenu.audioSrc;
-      if (isPlaying) audioRef.current.play().catch(() => {});
-      else audioRef.current.pause();
+      
+      // Simulate needle drop crackle
+      if (!audioCtxRef.current) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtxRef.current = new AudioContextClass();
+        }
+      }
+      
+      const ctx = audioCtxRef.current;
+      if (ctx && !isMutedRef.current) {
+        if (ctx.state === 'suspended') ctx.resume();
+        
+        // Needle Drop Crackle
+        const bufferSize = ctx.sampleRate * 0.5; // 0.5 seconds of crackle
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() > 0.95 ? (Math.random() * 2 - 1) * 0.5 : 0;
+        }
+        
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = buffer;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 2500;
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+        
+        noiseSource.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        
+        noiseSource.start();
+        
+        // Delay actual track start slightly to mimic physical needle drop
+        setTimeout(() => {
+          if (audioRef.current) audioRef.current.play().catch(() => {});
+        }, 300);
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
+    } else {
+      audioRef.current.pause();
     }
   }, [activeMenu, isPlaying]);
 
-  return null;
+  if (!hasStarted) return null;
+
+  return (
+    <button
+      onClick={() => setIsMuted(!isMuted)}
+      style={{
+        position: 'absolute',
+        bottom: '2rem',
+        right: '2rem',
+        background: 'rgba(0,0,0,0.5)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '50%',
+        width: '45px',
+        height: '45px',
+        color: 'white',
+        cursor: 'pointer',
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'all 0.3s ease',
+        backdropFilter: 'blur(10px)',
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      {isMuted ? (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+      ) : (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+      )}
+    </button>
+  );
 }
 
 function App() {

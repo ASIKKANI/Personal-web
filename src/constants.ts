@@ -2,7 +2,7 @@ export const MENUS = [
   { 
     id: 'about-me', 
     title: 'About Me', 
-    audioSrc: '/audio/kid-a.mp3', 
+    audioSrc: '/Everything In Its Right Place.mp3', 
     color: '#ffffff',
     image: '/images/kid_a.jpg',
     section: 'BIOGRAPHY',
@@ -22,7 +22,7 @@ export const MENUS = [
   { 
     id: 'experiences', 
     title: 'Experiences', 
-    audioSrc: '/audio/grace.mp3', 
+    audioSrc: '/Eternal Life.mp3', 
     color: '#4a3a2a',
     image: '/images/grace.jpg',
     section: 'JOURNEY',
@@ -53,7 +53,7 @@ export const MENUS = [
   { 
     id: 'projects', 
     title: 'Projects', 
-    audioSrc: '/audio/the-glow-pt2.mp3', 
+    audioSrc: '/I Want Wind to Blow.mp3', 
     color: '#d4c5a1',
     image: '/images/glow_pt2.jpg',
     section: 'PORTFOLIO',
@@ -113,7 +113,7 @@ export const MENUS = [
   { 
     id: 'connect', 
     title: 'Connect', 
-    audioSrc: '/audio/the-bends.mp3', 
+    audioSrc: '/Black Star.mp3',  
     color: '#ff4d00',
     image: '/images/the_bends.jpg',
     section: 'CONTACT',
