@@ -7,9 +7,6 @@ import { useStore } from '../store/useStore';
 // Final cinematic scene stabilization
 const Scene: FC = () => {
   const viewMode = useStore((state) => state.viewMode);
-  const hasStarted = useStore((state) => state.hasStarted);
-
-  if (!hasStarted) return null;
 
   return (
     <group position={[0, 0, 0]}>
