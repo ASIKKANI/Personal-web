@@ -22,7 +22,7 @@ const LandingPage: FC = () => {
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (isDragging) {
-      const deltaY = startY.current - e.clientY;
+      const deltaY = e.clientY - startY.current;
       setRotation(Math.max(0, startRot.current + deltaY * 1.5));
     }
   };
@@ -82,7 +82,7 @@ const LandingPage: FC = () => {
         }}
       >
         {/* Decorative Disc - Detailed with Breathing Animation */}
-        <div className="breathing-disc" style={{
+        <div className="breathing-disc interactive-disc" style={{
           width: '100%',
           height: '100%',
           borderRadius: '50%',
@@ -236,6 +236,16 @@ const LandingPage: FC = () => {
       </div>
 
       <style>{`
+        .interactive-disc {
+          transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.4s ease;
+        }
+        .interactive-disc:hover {
+          transform: scale(1.02) !important;
+          box-shadow: 0 0 200px rgba(255, 77, 0, 0.15), inset 0 0 100px rgba(255,255,255,0.03) !important;
+        }
+        .interactive-disc:active {
+          transform: scale(0.98);
+        }
         .enter-button:hover {
           background: #ff4d00 !important;
           color: white !important;
@@ -247,7 +257,7 @@ const LandingPage: FC = () => {
         }
         @keyframes breathe {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.03); }
+          50% { transform: scale(1.01); }
         }
       `}</style>
     </div>
