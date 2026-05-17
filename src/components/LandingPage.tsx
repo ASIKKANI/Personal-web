@@ -1,8 +1,11 @@
 import type { FC } from 'react';
 import { useStore } from '../store/useStore';
+import { useProgress } from '@react-three/drei';
 
 const LandingPage: FC = () => {
   const setHasStarted = useStore((state) => state.setHasStarted);
+  const { progress, total, loaded } = useProgress();
+  const isLoaded = progress === 100 || (total > 0 && loaded === total);
 
   return (
     <div style={{
@@ -143,18 +146,18 @@ const LandingPage: FC = () => {
         </div>
 
         <button 
-          onClick={() => setHasStarted(true)}
-          className="fade-in-up enter-button"
+          onClick={() => isLoaded && setHasStarted(true)}
+          className={`fade-in-up ${isLoaded ? 'enter-button' : ''}`}
           style={{
             marginTop: '2.5rem',
             width: 'fit-content',
-            background: 'white',
-            color: 'black',
+            background: isLoaded ? 'white' : 'rgba(255,255,255,0.1)',
+            color: isLoaded ? 'black' : 'rgba(255,255,255,0.5)',
             border: 'none',
             padding: '1.5rem 5rem',
             fontSize: '1.2rem',
             fontWeight: 900,
-            cursor: 'pointer',
+            cursor: isLoaded ? 'pointer' : 'wait',
             letterSpacing: '5px',
             textTransform: 'uppercase',
             animationDelay: '0.8s',
@@ -162,8 +165,9 @@ const LandingPage: FC = () => {
             position: 'relative',
             overflow: 'hidden'
           }}
+          disabled={!isLoaded}
         >
-          Enter Experience
+          {isLoaded ? 'Enter Experience' : `Loading ${Math.round(progress)}%`}
         </button>
       </div>
 
