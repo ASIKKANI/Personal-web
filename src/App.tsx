@@ -27,27 +27,27 @@ function CameraRig({ controlsRef }: { controlsRef: any }) {
         targetLook = new THREE.Vector3(4.0, 1.5, 0);
       } else {
         if (isPlaying && activeMenu) {
-          // Dynamic Cinematic Angles per Portfolio Track
+          // Dynamic Cinematic Angles per Portfolio Track - highly dramatic, player on the left
           if (activeMenu.id === 'about-me') {
-            targetPos = new THREE.Vector3(2.4, 2.8, 2.4);
-            targetLook = new THREE.Vector3(0, 0.4, 0);
+            targetPos = new THREE.Vector3(-1.0, 1.2, 3.0);
+            targetLook = new THREE.Vector3(2.0, 0.4, 0);
           } else if (activeMenu.id === 'experiences') {
-            targetPos = new THREE.Vector3(-2.2, 2.8, 2.6);
-            targetLook = new THREE.Vector3(0, 0.4, 0);
+            targetPos = new THREE.Vector3(1.5, 5.0, 0.5);
+            targetLook = new THREE.Vector3(1.5, 0, 0);
           } else if (activeMenu.id === 'projects') {
-            targetPos = new THREE.Vector3(0, 4.2, 1.2);
-            targetLook = new THREE.Vector3(0, 0.4, 0);
+            targetPos = new THREE.Vector3(1.0, 0.8, 2.8);
+            targetLook = new THREE.Vector3(2.5, 0.5, -0.5);
           } else if (activeMenu.id === 'connect') {
-            targetPos = new THREE.Vector3(1.8, 2.2, 3.8);
-            targetLook = new THREE.Vector3(0, 0.2, 0);
+            targetPos = new THREE.Vector3(-1.5, 1.8, 4.0);
+            targetLook = new THREE.Vector3(3.0, 0.2, 0);
           } else {
-            targetPos = new THREE.Vector3(1.2, 2.0, 2.5);
-            targetLook = new THREE.Vector3(0, 0.4, 0);
+            targetPos = new THREE.Vector3(0, 2.0, 3.0);
+            targetLook = new THREE.Vector3(2.0, 0.4, 0);
           }
         } else {
-          // Default focused player view
-          targetPos = new THREE.Vector3(0, 3.2, 3.0);
-          targetLook = new THREE.Vector3(0, 0, 0);
+          // Default focused player view - Pushed far left for the UI
+          targetPos = new THREE.Vector3(0, 3.5, 4.0);
+          targetLook = new THREE.Vector3(2.5, 0.5, 0);
         }
       }
     }
