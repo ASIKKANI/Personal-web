@@ -137,8 +137,22 @@ const LandingPage: FC = () => {
       setRotation(prev => Math.max(0, prev + e.deltaY * 0.5));
       playScratch(Math.abs(e.deltaY * 0.5));
     };
+
+    const handleFirstInteraction = () => {
+      initAudio();
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
     window.addEventListener('wheel', handleWheel);
-    return () => window.removeEventListener('wheel', handleWheel);
+    window.addEventListener('pointerdown', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
   }, []);
 
   // Helper to map rotation to opacity and transform
