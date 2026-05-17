@@ -30,20 +30,20 @@ function CameraRig({ controlsRef }: { controlsRef: any }) {
           if (isPlaying) {
             // Dynamic Cinematic Angles per Portfolio Track - highly dramatic, player nicely on the left
             if (activeMenu.id === 'about-me') {
-              targetPos = new THREE.Vector3(-1.0, 2.5, 3.5);
-              targetLook = new THREE.Vector3(1.2, 0.4, 0);
+              targetPos = new THREE.Vector3(-0.5, 2.2, 3.8);
+              targetLook = new THREE.Vector3(1.8, 0.4, 0);
             } else if (activeMenu.id === 'experiences') {
-              targetPos = new THREE.Vector3(1.0, 3.5, 2.5);
-              targetLook = new THREE.Vector3(1.0, 0.2, 0);
+              targetPos = new THREE.Vector3(1.0, 3.5, 3.0);
+              targetLook = new THREE.Vector3(2.2, 0.2, 0);
             } else if (activeMenu.id === 'projects') {
-              targetPos = new THREE.Vector3(0, 2.0, 4.0);
-              targetLook = new THREE.Vector3(1.5, 0.4, 0);
+              targetPos = new THREE.Vector3(0.5, 1.8, 4.0);
+              targetLook = new THREE.Vector3(1.8, 0.4, 0);
             } else if (activeMenu.id === 'connect') {
-              targetPos = new THREE.Vector3(-2.0, 3.0, 2.0);
-              targetLook = new THREE.Vector3(1.5, 0.2, -1.0);
+              targetPos = new THREE.Vector3(-1.0, 2.8, 3.5);
+              targetLook = new THREE.Vector3(2.2, 0.2, -0.5);
             } else {
-              targetPos = new THREE.Vector3(0, 3.0, 3.5);
-              targetLook = new THREE.Vector3(1.2, 0.4, 0);
+              targetPos = new THREE.Vector3(0, 2.5, 3.8);
+              targetLook = new THREE.Vector3(1.8, 0.4, 0);
             }
           } else {
             // Album selected but paused - Left framed but perfectly balanced
