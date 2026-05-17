@@ -13,6 +13,32 @@ const LandingPage: FC = () => {
   const startY = useRef(0);
   const startRot = useRef(0);
 
+  // Background Loop Audio
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    bgAudioRef.current = new Audio('/New_Project.mp3');
+    bgAudioRef.current.volume = 0.5;
+    
+    // Loop only the first 17 seconds
+    const handleTimeUpdate = () => {
+      if (bgAudioRef.current && bgAudioRef.current.currentTime >= 17) {
+        bgAudioRef.current.currentTime = 0;
+        bgAudioRef.current.play().catch(() => {});
+      }
+    };
+    
+    bgAudioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      if (bgAudioRef.current) {
+        bgAudioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+        bgAudioRef.current.pause();
+        bgAudioRef.current.src = '';
+      }
+    };
+  }, []);
+
   // Web Audio Context for realistic vinyl scratching
   const audioCtxRef = useRef<AudioContext | null>(null);
   const noiseGainRef = useRef<GainNode | null>(null);
@@ -55,6 +81,11 @@ const LandingPage: FC = () => {
     }
     if (audioCtxRef.current.state === 'suspended') {
       audioCtxRef.current.resume();
+    }
+    
+    // Start background music on first interaction
+    if (bgAudioRef.current && bgAudioRef.current.paused) {
+      bgAudioRef.current.play().catch(() => {});
     }
   };
 
