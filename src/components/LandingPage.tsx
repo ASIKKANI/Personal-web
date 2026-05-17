@@ -10,10 +10,11 @@ const LandingPage: FC = () => {
 
   const [rotation, setRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  
   const startY = useRef(0);
   const startRot = useRef(0);
-
-  // Background Loop Audio
   const bgAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -39,79 +40,45 @@ const LandingPage: FC = () => {
     };
   }, []);
 
-  // Web Audio Context for realistic vinyl scratching
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const noiseGainRef = useRef<GainNode | null>(null);
-  const filterRef = useRef<BiquadFilterNode | null>(null);
-  const timeoutRef = useRef<any>(null);
+  useEffect(() => {
+    if (bgAudioRef.current) {
+      bgAudioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
-  const initAudio = () => {
-    if (!audioCtxRef.current) {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextClass) return;
-      const ctx = new AudioContextClass();
-      audioCtxRef.current = ctx;
-
-      const bufferSize = ctx.sampleRate * 2; // 2 seconds of noise
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1; // white noise
+  // Auto-spin and audio rate lerp
+  useEffect(() => {
+    let animationFrame: number;
+    const loop = () => {
+      if (!isHovered && !isDragging) {
+        setRotation((prev) => prev + 0.15); // Gentle auto-spin
       }
+      
+      // Smoothly return audio to normal speed
+      if (!isDragging && bgAudioRef.current) {
+        const currentRate = bgAudioRef.current.playbackRate;
+        bgAudioRef.current.playbackRate = currentRate + (1.0 - currentRate) * 0.1;
+      }
+      animationFrame = requestAnimationFrame(loop);
+    };
+    loop();
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isHovered, isDragging]);
 
-      const noiseSource = ctx.createBufferSource();
-      noiseSource.buffer = buffer;
-      noiseSource.loop = true;
-
-      // Bandpass filter to make it sound like a needle scratch
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.value = 1000;
-      filter.Q.value = 2.0; // Sharp resonance for a vinyl 'swish'
-      filterRef.current = filter;
-
-      const gain = ctx.createGain();
-      gain.gain.value = 0; // silent initially
-      noiseGainRef.current = gain;
-
-      noiseSource.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      noiseSource.start();
-    }
-    if (audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
-    }
-    
-    // Start background music on first interaction
+  const unlockAudio = () => {
     if (bgAudioRef.current && bgAudioRef.current.paused) {
       bgAudioRef.current.play().catch(() => {});
     }
   };
 
-  const playScratch = (speed: number) => {
-    if (noiseGainRef.current && filterRef.current && audioCtxRef.current) {
-      const ctx = audioCtxRef.current;
-      const safeSpeed = Math.min(speed, 50); // cap speed
-      
-      // Louder and higher pitch when moving faster
-      const targetGain = Math.min(0.4, safeSpeed * 0.02);
-      const targetFreq = 300 + safeSpeed * 40; // Pitch bends with speed
-
-      noiseGainRef.current.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.02);
-      filterRef.current.frequency.setTargetAtTime(targetFreq, ctx.currentTime, 0.02);
-
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        if (noiseGainRef.current) {
-          noiseGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current!.currentTime, 0.1);
-        }
-      }, 50);
+  const modulateAudio = (speed: number) => {
+    if (bgAudioRef.current) {
+       bgAudioRef.current.playbackRate = Math.max(0.5, Math.min(2.5, speed * 0.05));
     }
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    initAudio();
+    unlockAudio();
     setIsDragging(true);
     startY.current = e.clientY;
     startRot.current = rotation;
@@ -122,7 +89,7 @@ const LandingPage: FC = () => {
     if (isDragging) {
       const deltaY = e.clientY - startY.current;
       setRotation(Math.max(0, startRot.current + deltaY * 1.5));
-      playScratch(Math.abs(e.movementY || 10));
+      modulateAudio(Math.abs(e.movementY || 10));
     }
   };
 
@@ -133,13 +100,13 @@ const LandingPage: FC = () => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      initAudio();
-      setRotation(prev => Math.max(0, prev + e.deltaY * 0.5));
-      playScratch(Math.abs(e.deltaY * 0.5));
+      unlockAudio();
+      setRotation(prev => Math.max(0, prev + Math.abs(e.deltaY) * 0.2));
+      modulateAudio(Math.abs(e.deltaY));
     };
 
     const handleFirstInteraction = () => {
-      initAudio();
+      unlockAudio();
       window.removeEventListener('pointerdown', handleFirstInteraction);
       window.removeEventListener('keydown', handleFirstInteraction);
     };
@@ -186,6 +153,8 @@ const LandingPage: FC = () => {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
         style={{
           position: 'absolute',
           left: '-15%',
@@ -349,6 +318,37 @@ const LandingPage: FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Audio Toggle */}
+      <button
+        onClick={() => setIsMuted(!isMuted)}
+        style={{
+          position: 'absolute',
+          bottom: '2rem',
+          right: '2rem',
+          background: 'none',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '50%',
+          width: '50px',
+          height: '50px',
+          color: 'white',
+          cursor: 'pointer',
+          zIndex: 200,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.3s ease',
+          opacity: 0.6
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+      >
+        {isMuted ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+        )}
+      </button>
 
       <style>{`
         .interactive-disc {
