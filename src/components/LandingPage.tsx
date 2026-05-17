@@ -13,7 +13,74 @@ const LandingPage: FC = () => {
   const startY = useRef(0);
   const startRot = useRef(0);
 
+  // Web Audio Context for realistic vinyl scratching
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const noiseGainRef = useRef<GainNode | null>(null);
+  const filterRef = useRef<BiquadFilterNode | null>(null);
+  const timeoutRef = useRef<any>(null);
+
+  const initAudio = () => {
+    if (!audioCtxRef.current) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      audioCtxRef.current = ctx;
+
+      const bufferSize = ctx.sampleRate * 2; // 2 seconds of noise
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1; // white noise
+      }
+
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = buffer;
+      noiseSource.loop = true;
+
+      // Bandpass filter to make it sound like a needle scratch
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1000;
+      filter.Q.value = 2.0; // Sharp resonance for a vinyl 'swish'
+      filterRef.current = filter;
+
+      const gain = ctx.createGain();
+      gain.gain.value = 0; // silent initially
+      noiseGainRef.current = gain;
+
+      noiseSource.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noiseSource.start();
+    }
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
+  };
+
+  const playScratch = (speed: number) => {
+    if (noiseGainRef.current && filterRef.current && audioCtxRef.current) {
+      const ctx = audioCtxRef.current;
+      const safeSpeed = Math.min(speed, 50); // cap speed
+      
+      // Louder and higher pitch when moving faster
+      const targetGain = Math.min(0.4, safeSpeed * 0.02);
+      const targetFreq = 300 + safeSpeed * 40; // Pitch bends with speed
+
+      noiseGainRef.current.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.02);
+      filterRef.current.frequency.setTargetAtTime(targetFreq, ctx.currentTime, 0.02);
+
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        if (noiseGainRef.current) {
+          noiseGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current!.currentTime, 0.1);
+        }
+      }, 50);
+    }
+  };
+
   const handlePointerDown = (e: React.PointerEvent) => {
+    initAudio();
     setIsDragging(true);
     startY.current = e.clientY;
     startRot.current = rotation;
@@ -24,6 +91,7 @@ const LandingPage: FC = () => {
     if (isDragging) {
       const deltaY = e.clientY - startY.current;
       setRotation(Math.max(0, startRot.current + deltaY * 1.5));
+      playScratch(Math.abs(e.movementY || 10));
     }
   };
 
@@ -34,7 +102,9 @@ const LandingPage: FC = () => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      initAudio();
       setRotation(prev => Math.max(0, prev + e.deltaY * 0.5));
+      playScratch(Math.abs(e.deltaY * 0.5));
     };
     window.addEventListener('wheel', handleWheel);
     return () => window.removeEventListener('wheel', handleWheel);
