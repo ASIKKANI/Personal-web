@@ -10,75 +10,11 @@ const LandingPage: FC = () => {
 
   const [rotation, setRotation] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   
   const startY = useRef(0);
   const startRot = useRef(0);
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    bgAudioRef.current = new Audio('/New_Project.mp3');
-    bgAudioRef.current.volume = 0.5;
-    
-    // Loop only the first 17 seconds
-    const handleTimeUpdate = () => {
-      if (bgAudioRef.current && bgAudioRef.current.currentTime >= 17) {
-        bgAudioRef.current.currentTime = 0;
-        bgAudioRef.current.play().catch(() => {});
-      }
-    };
-    
-    bgAudioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-
-    return () => {
-      if (bgAudioRef.current) {
-        bgAudioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-        bgAudioRef.current.pause();
-        bgAudioRef.current.src = '';
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (bgAudioRef.current) {
-      bgAudioRef.current.muted = isMuted;
-    }
-  }, [isMuted]);
-
-  // Auto-spin and audio rate lerp
-  useEffect(() => {
-    let animationFrame: number;
-    const loop = () => {
-      if (!isHovered && !isDragging) {
-        setRotation((prev) => prev + 0.15); // Gentle auto-spin
-      }
-      
-      // Smoothly return audio to normal speed
-      if (!isDragging && bgAudioRef.current) {
-        const currentRate = bgAudioRef.current.playbackRate;
-        bgAudioRef.current.playbackRate = currentRate + (1.0 - currentRate) * 0.1;
-      }
-      animationFrame = requestAnimationFrame(loop);
-    };
-    loop();
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isHovered, isDragging]);
-
-  const unlockAudio = () => {
-    if (bgAudioRef.current && bgAudioRef.current.paused) {
-      bgAudioRef.current.play().catch(() => {});
-    }
-  };
-
-  const modulateAudio = (speed: number) => {
-    if (bgAudioRef.current) {
-       bgAudioRef.current.playbackRate = Math.max(0.5, Math.min(2.5, speed * 0.05));
-    }
-  };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    unlockAudio();
     setIsDragging(true);
     startY.current = e.clientY;
     startRot.current = rotation;
@@ -89,7 +25,6 @@ const LandingPage: FC = () => {
     if (isDragging) {
       const deltaY = e.clientY - startY.current;
       setRotation(Math.max(0, startRot.current + deltaY * 1.5));
-      modulateAudio(Math.abs(e.movementY || 10));
     }
   };
 
@@ -100,25 +35,13 @@ const LandingPage: FC = () => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      unlockAudio();
       setRotation(prev => Math.max(0, prev + Math.abs(e.deltaY) * 0.2));
-      modulateAudio(Math.abs(e.deltaY));
-    };
-
-    const handleFirstInteraction = () => {
-      unlockAudio();
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
     };
 
     window.addEventListener('wheel', handleWheel);
-    window.addEventListener('pointerdown', handleFirstInteraction);
-    window.addEventListener('keydown', handleFirstInteraction);
     
     return () => {
       window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('keydown', handleFirstInteraction);
     };
   }, []);
 
@@ -153,8 +76,6 @@ const LandingPage: FC = () => {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onPointerEnter={() => setIsHovered(true)}
-        onPointerLeave={() => setIsHovered(false)}
         style={{
           position: 'absolute',
           left: '-15%',
@@ -318,37 +239,6 @@ const LandingPage: FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Audio Toggle */}
-      <button
-        onClick={() => setIsMuted(!isMuted)}
-        style={{
-          position: 'absolute',
-          bottom: '2rem',
-          right: '2rem',
-          background: 'none',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '50%',
-          width: '50px',
-          height: '50px',
-          color: 'white',
-          cursor: 'pointer',
-          zIndex: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'all 0.3s ease',
-          opacity: 0.6
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
-      >
-        {isMuted ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-        ) : (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-        )}
-      </button>
 
       <style>{`
         .interactive-disc {
