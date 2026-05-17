@@ -227,4 +227,4 @@ export function Model(props: any) {
   )
 }
 
-useGLTF.preload('/vinyls_1.glb')
+useGLTF.preload('/models/vinyls_1.glb')

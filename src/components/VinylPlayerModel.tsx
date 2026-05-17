@@ -21,4 +21,4 @@ export function Model(props: any) {
   )
 }
 
-useGLTF.preload('/vinyl_record_player.glb')
+useGLTF.preload('/models/vinyl_record_player.glb')

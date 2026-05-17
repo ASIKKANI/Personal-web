@@ -138,3 +138,7 @@ const RecordShelf: FC = () => {
 };
 
 export default RecordShelf;
+
+MENUS.forEach((menu) => {
+  useTexture.preload(menu.image);
+});
