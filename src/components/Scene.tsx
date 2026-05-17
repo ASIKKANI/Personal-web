@@ -7,9 +7,10 @@ import { useStore } from '../store/useStore';
 // Final cinematic scene stabilization
 const Scene: FC = () => {
   const viewMode = useStore((state) => state.viewMode);
+  const hasStarted = useStore((state) => state.hasStarted);
 
   return (
-    <group position={[0, 0, 0]}>
+    <group position={[0, 0, 0]} visible={hasStarted}>
       {/* Interactive Title - Peak Design Aesthetic with Dual Tones */}
       <group 
         position={[-1.2, 4.2, -2]}
