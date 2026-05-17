@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import type { FC } from 'react';
 import { useStore } from '../store/useStore';
 import { useProgress } from '@react-three/drei';
@@ -6,6 +7,48 @@ const LandingPage: FC = () => {
   const setHasStarted = useStore((state) => state.setHasStarted);
   const { progress, total, loaded } = useProgress();
   const isLoaded = progress === 100 || (total > 0 && loaded === total);
+
+  const [rotation, setRotation] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startY = useRef(0);
+  const startRot = useRef(0);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    startY.current = e.clientY;
+    startRot.current = rotation;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (isDragging) {
+      const deltaY = startY.current - e.clientY;
+      setRotation(Math.max(0, startRot.current + deltaY * 1.5));
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      setRotation(prev => Math.max(0, prev + e.deltaY * 0.5));
+    };
+    window.addEventListener('wheel', handleWheel);
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  // Helper to map rotation to opacity and transform
+  const getStyle = (threshold: number) => {
+    const progress = Math.min(1, Math.max(0, (rotation - threshold) / 90));
+    return {
+      opacity: progress,
+      transform: `translateY(${30 - progress * 30}px)`,
+      transition: isDragging ? 'none' : 'all 0.1s ease-out'
+    };
+  };
 
   return (
     <div style={{
@@ -22,63 +65,83 @@ const LandingPage: FC = () => {
       fontFamily: "'Outfit', 'Inter', sans-serif",
       background: 'transparent'
     }}>
-      {/* Decorative Disc - Detailed with Breathing Animation */}
-      <div className="breathing-disc" style={{
-        position: 'absolute',
-        left: '-8%',
-        width: '110vh',
-        height: '110vh',
-        borderRadius: '50%',
-        background: '#080808',
-        boxShadow: '0 0 150px rgba(0,0,0,1), inset 0 0 80px rgba(255,255,255,0.02)',
-        animation: 'rotate 40s linear infinite, breathe 8s ease-in-out infinite',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: 0.85,
-        border: '1px solid #111'
-      }}>
-        {[...Array(25)].map((_, i) => (
-          <div key={i} style={{
-            position: 'absolute',
-            width: `${96 - i * 3}%`,
-            height: `${96 - i * 3}%`,
-            borderRadius: '50%',
-            border: '1px solid rgba(255,255,255,0.035)',
-            boxShadow: 'inset 0 0 8px rgba(0,0,0,0.6)'
-          }} />
-        ))}
-        
-        <div style={{
+      {/* Interactive Wrapper for the Disc */}
+      <div 
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{
           position: 'absolute',
+          left: '-15%',
+          width: '110vh',
+          height: '110vh',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          transform: `rotate(${rotation}deg)`,
+          touchAction: 'none' // Prevent scrolling on mobile while dragging
+        }}
+      >
+        {/* Decorative Disc - Detailed with Breathing Animation */}
+        <div className="breathing-disc" style={{
           width: '100%',
           height: '100%',
-          background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.04) 15%, transparent 30%, transparent 50%, rgba(255,255,255,0.04) 65%, transparent 80%)',
           borderRadius: '50%',
-          animation: 'rotate-reverse 20s linear infinite'
-        }} />
-
-        <div style={{
-          position: 'absolute',
-          width: '28%',
-          height: '28%',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #ff4d00, #ff8800)',
+          background: '#080808',
+          boxShadow: '0 0 150px rgba(0,0,0,1), inset 0 0 80px rgba(255,255,255,0.02)',
+          animation: 'breathe 8s ease-in-out infinite',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#000',
-          fontWeight: 900,
-          fontSize: '1.6rem',
-          textAlign: 'center',
-          boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)',
-          letterSpacing: '-1px'
+          opacity: 0.85,
+          border: '1px solid #111',
+          position: 'relative'
         }}>
-          ASIK<br/>KANI
+          {[...Array(25)].map((_, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              width: `${96 - i * 3}%`,
+              height: `${96 - i * 3}%`,
+              borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.035)',
+              boxShadow: 'inset 0 0 8px rgba(0,0,0,0.6)',
+              pointerEvents: 'none'
+            }} />
+          ))}
+          
+          <div style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.04) 15%, transparent 30%, transparent 50%, rgba(255,255,255,0.04) 65%, transparent 80%)',
+            borderRadius: '50%',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{
+            position: 'absolute',
+            width: '28%',
+            height: '28%',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #ff4d00, #ff8800)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#000',
+            fontWeight: 900,
+            fontSize: '1.2rem',
+            textAlign: 'center',
+            boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)',
+            letterSpacing: '-1px',
+            pointerEvents: 'none'
+          }}>
+            <span style={{ fontSize: '0.6rem', opacity: 0.6, letterSpacing: '3px', marginBottom: '4px' }}>DRAG OR SCROLL</span>
+            ASIK<br/>KANI
+          </div>
         </div>
       </div>
 
-      {/* Info Content - Staggered Animations */}
+      {/* Info Content - Interactive Reveal */}
       <div style={{
         zIndex: 101,
         maxWidth: '1000px',
@@ -87,9 +150,9 @@ const LandingPage: FC = () => {
         display: 'flex',
         flexDirection: 'column',
         gap: '2rem',
-        pointerEvents: 'auto'
+        pointerEvents: 'none' /* Let drags pass through to the wrapper if needed, but we'll enable pointer events on the button */
       }}>
-        <div className="fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <div style={getStyle(0)}>
           <h2 style={{ 
             fontSize: '1rem', 
             textTransform: 'uppercase', 
@@ -115,24 +178,24 @@ const LandingPage: FC = () => {
           </h1>
         </div>
 
-        <p className="fade-in-up" style={{ 
+        <p style={{ 
           fontSize: '1.8rem', 
           lineHeight: 1.2, 
           color: '#999', 
           maxWidth: '600px', 
           margin: 0, 
           fontWeight: 300,
-          animationDelay: '0.4s'
+          ...getStyle(90)
         }}>
           Engineering <span style={{ color: '#fff', fontWeight: 600 }}>Interpretable AI</span>, 
           autonomous agents, and high-performance LLM pipelines.
         </p>
 
-        <div className="fade-in-up" style={{ 
+        <div style={{ 
           display: 'flex', 
           gap: '5rem', 
           marginTop: '1rem',
-          animationDelay: '0.6s'
+          ...getStyle(180)
         }}>
           <div>
             <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff' }}>5</div>
@@ -145,56 +208,47 @@ const LandingPage: FC = () => {
           </div>
         </div>
 
-        <button 
-          onClick={() => isLoaded && setHasStarted(true)}
-          className={`fade-in-up ${isLoaded ? 'enter-button' : ''}`}
-          style={{
-            marginTop: '2.5rem',
-            width: 'fit-content',
-            background: isLoaded ? 'white' : 'rgba(255,255,255,0.1)',
-            color: isLoaded ? 'black' : 'rgba(255,255,255,0.5)',
-            border: 'none',
-            padding: '1.5rem 5rem',
-            fontSize: '1.2rem',
-            fontWeight: 900,
-            cursor: isLoaded ? 'pointer' : 'wait',
-            letterSpacing: '5px',
-            textTransform: 'uppercase',
-            animationDelay: '0.8s',
-            transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-          disabled={!isLoaded}
-        >
-          {isLoaded ? 'Enter Experience' : `Loading ${Math.round(progress)}%`}
-        </button>
+        <div style={{ ...getStyle(270), pointerEvents: 'auto' }}>
+          <button 
+            onClick={() => isLoaded && setHasStarted(true)}
+            className={isLoaded ? 'enter-button' : ''}
+            style={{
+              marginTop: '2.5rem',
+              width: 'fit-content',
+              background: isLoaded ? 'white' : 'rgba(255,255,255,0.1)',
+              color: isLoaded ? 'black' : 'rgba(255,255,255,0.5)',
+              border: 'none',
+              padding: '1.5rem 5rem',
+              fontSize: '1.2rem',
+              fontWeight: 900,
+              cursor: isLoaded ? 'pointer' : 'wait',
+              letterSpacing: '5px',
+              textTransform: 'uppercase',
+              transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? 'Enter Experience' : `Loading ${Math.round(progress)}%`}
+          </button>
+        </div>
       </div>
 
       <style>{`
-        .fade-in-up {
-          opacity: 0;
-          transform: translateY(30px);
-          animation: fadeInUp 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
         .enter-button:hover {
           background: #ff4d00 !important;
           color: white !important;
-          transform: scale(1.05) translateY(-5px);
-          box-shadow: 0 20px 40px rgba(255, 77, 0, 0.3);
+          transform: scale(1.05) translateY(-5px) !important;
+          box-shadow: 0 20px 40px rgba(255, 77, 0, 0.3) !important;
         }
         .enter-button:active {
-          transform: scale(0.98);
-        }
-        @keyframes fadeInUp {
-          to { opacity: 1; transform: translateY(0); }
+          transform: scale(0.98) !important;
         }
         @keyframes breathe {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.03); }
         }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes rotate-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
       `}</style>
     </div>
   );
