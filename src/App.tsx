@@ -26,28 +26,34 @@ function CameraRig({ controlsRef }: { controlsRef: any }) {
         targetPos = new THREE.Vector3(4.0, 3.0, 7.5);
         targetLook = new THREE.Vector3(4.0, 1.5, 0);
       } else {
-        if (isPlaying && activeMenu) {
-          // Dynamic Cinematic Angles per Portfolio Track - highly dramatic, player on the left
-          if (activeMenu.id === 'about-me') {
-            targetPos = new THREE.Vector3(-1.0, 1.2, 3.0);
-            targetLook = new THREE.Vector3(2.0, 0.4, 0);
-          } else if (activeMenu.id === 'experiences') {
-            targetPos = new THREE.Vector3(1.5, 5.0, 0.5);
-            targetLook = new THREE.Vector3(1.5, 0, 0);
-          } else if (activeMenu.id === 'projects') {
-            targetPos = new THREE.Vector3(1.0, 0.8, 2.8);
-            targetLook = new THREE.Vector3(2.5, 0.5, -0.5);
-          } else if (activeMenu.id === 'connect') {
-            targetPos = new THREE.Vector3(-1.5, 1.8, 4.0);
-            targetLook = new THREE.Vector3(3.0, 0.2, 0);
+        if (activeMenu) {
+          if (isPlaying) {
+            // Dynamic Cinematic Angles per Portfolio Track - highly dramatic, player nicely on the left
+            if (activeMenu.id === 'about-me') {
+              targetPos = new THREE.Vector3(-1.0, 1.2, 3.0);
+              targetLook = new THREE.Vector3(1.2, 0.4, 0);
+            } else if (activeMenu.id === 'experiences') {
+              targetPos = new THREE.Vector3(1.5, 5.0, 0.5);
+              targetLook = new THREE.Vector3(1.0, 0, 0);
+            } else if (activeMenu.id === 'projects') {
+              targetPos = new THREE.Vector3(1.0, 0.8, 2.8);
+              targetLook = new THREE.Vector3(1.5, 0.5, -0.5);
+            } else if (activeMenu.id === 'connect') {
+              targetPos = new THREE.Vector3(-1.5, 1.8, 4.0);
+              targetLook = new THREE.Vector3(2.0, 0.2, 0);
+            } else {
+              targetPos = new THREE.Vector3(0, 2.0, 3.0);
+              targetLook = new THREE.Vector3(1.2, 0.4, 0);
+            }
           } else {
-            targetPos = new THREE.Vector3(0, 2.0, 3.0);
-            targetLook = new THREE.Vector3(2.0, 0.4, 0);
+            // Album selected but paused - Left framed but perfectly balanced
+            targetPos = new THREE.Vector3(0, 3.5, 4.0);
+            targetLook = new THREE.Vector3(1.2, 0.5, 0);
           }
         } else {
-          // Default focused player view - Pushed far left for the UI
-          targetPos = new THREE.Vector3(0, 3.5, 4.0);
-          targetLook = new THREE.Vector3(2.5, 0.5, 0);
+          // Home Page (No album selected) - Perfectly Center the player
+          targetPos = new THREE.Vector3(0, 3.2, 3.0);
+          targetLook = new THREE.Vector3(0, 0, 0);
         }
       }
     }
